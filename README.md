@@ -61,23 +61,17 @@ components ➜
 ✅ Preview mode  
 ✅ All 11 style variants  
 
-## 📁 Files Included
-
-- `install_prompt.sh` - Main installation script
-- `README.md` - Full documentation
-- `test_installation.sh` - Test verification script
-
 ## 🎨 Available Styles
 
 1. Minimalist Color
 2. Arrow Style (Full Path)
-2s. Arrow Style (Short Path) ⭐
+2s. Arrow Style (Short Path)
 3. Two-Line (Full Path)
-3s. Two-Line (Short Path) ⭐
+3s. Two-Line (Short Path)
 4. Compact Git-Aware
 5. Powerline-like
 6. Emoji Style
 7. Time-Stamped (Full Path)
 7s. Time-Stamped (Short Path)
 8. Bracket Style
-9. Arrow Minimalist ⭐
+9. Arrow Minimalist 
