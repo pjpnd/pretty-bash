@@ -59,7 +59,7 @@ components ➜
 ✅ Default Ubuntu/Debian .bashrc  
 ✅ Multiple installations (backup safety)  
 ✅ Preview mode  
-✅ All 11 style variants  
+✅ All 9 style variants  
 
 ## 🎨 Available Styles
 
