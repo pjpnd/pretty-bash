@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Bash script to install a new shell prompt style
+# Bash script to install a new bash prompt style
 
 # Function to show preview of all styles
 show_preview() {
@@ -51,7 +51,7 @@ show_preview() {
         echo "---"
         echo ""
 
-        echo "2s. Arrow Style (Short Path)"
+        echo "2s. Arrow Style (Short Path) ⭐ RECOMMENDED"
         echo "   user@hostname components ➜ "
         echo ""
         echo "   Shows: Just current folder name with arrow"
@@ -135,7 +135,7 @@ show_preview() {
         echo "---"
         echo ""
 
-        echo "9. Arrow Minimalist (Short Path Only)"
+        echo "9. Arrow Minimalist (Short Path Only) ⭐ CLEANEST"
         echo "   components ➜ "
         echo ""
         echo "   Shows: Just folder and arrow, nothing else"
@@ -240,79 +240,31 @@ fi
 # Create a temporary file with the new content
 TEMP_FILE=$(mktemp)
 
-# More robust approach: Check if PS1 configuration exists
-if grep -q "PS1=" "$BASHRC"; then
-    # PS1 exists, replace it
-    awk -v new_ps1="$PS1_VALUE" '
-        BEGIN {
-            in_ps1_section = 0
-            ps1_replaced = 0
-            in_color_check = 0
-            skip_until_fi = 0
-        }
+# Check if PS1 configuration exists
+if grep -q "^PS1=" "$BASHRC" || grep -q "^# Custom prompt configuration" "$BASHRC"; then
+    # PS1 exists or was previously customized, replace it
 
-        # Skip the force_color_prompt check block
-        /^if \[ -n "\$force_color_prompt" \]; then/ {
-            in_color_check = 1
-            next
-        }
+    # Remove any existing custom prompt section (our own additions)
+    sed '/^# Custom prompt configuration$/,/^PS1=/{/^PS1=/d; /^# Custom prompt configuration$/d;}' "$BASHRC" > "$TEMP_FILE.tmp"
 
-        in_color_check == 1 {
-            if (/^fi$/) {
-                in_color_check = 0
-            }
-            next
-        }
+    # Remove the standard PS1 configuration blocks but keep case statements
+    sed -i '/^if \[ -n "\$force_color_prompt" \]; then/,/^fi$/d' "$TEMP_FILE.tmp"
+    sed -i '/^if \[ "\$color_prompt" = yes \]; then/,/^unset color_prompt force_color_prompt/d' "$TEMP_FILE.tmp"
+    sed -i '/^#force_color_prompt=yes/d' "$TEMP_FILE.tmp"
 
-        # Skip the xterm-color case block
-        /^case "\$TERM" in/,/^esac$/ {
-            if (/xterm-color.*color_prompt=yes/) next
-            if (/^case "\$TERM" in/ || /^esac$/) next
-        }
+    # Add the new custom prompt configuration at the end
+    cp "$TEMP_FILE.tmp" "$TEMP_FILE"
+    echo "" >> "$TEMP_FILE"
+    echo "# Custom prompt configuration" >> "$TEMP_FILE"
+    echo "PS1='$PS1_VALUE'" >> "$TEMP_FILE"
 
-        # Detect start of PS1 configuration block
-        /^if \[ "\$color_prompt" = yes \]; then/ {
-            in_ps1_section = 1
-            print "# Custom prompt configuration"
-            print "PS1=\"" new_ps1 "\""
-            ps1_replaced = 1
-            skip_until_fi = 1
-            next
-        }
-
-        # Skip everything until we find the matching unset
-        skip_until_fi == 1 {
-            if (/^unset color_prompt force_color_prompt/) {
-                skip_until_fi = 0
-                next
-            }
-            next
-        }
-
-        # Skip standalone PS1 assignments
-        /^PS1=/ && ps1_replaced == 0 {
-            if (!ps1_replaced) {
-                print "# Custom prompt configuration"
-                print "PS1=\"" new_ps1 "\""
-                ps1_replaced = 1
-            }
-            next
-        }
-
-        # Skip commented force_color_prompt
-        /^#force_color_prompt=yes/ { next }
-
-        # Print all other lines
-        { print }
-    ' "$BASHRC" > "$TEMP_FILE"
+    rm -f "$TEMP_FILE.tmp"
 else
     # No PS1 configuration exists, append to end of file
     cp "$BASHRC" "$TEMP_FILE"
-    cat >> "$TEMP_FILE" << EOF
-
-# Custom prompt configuration
-PS1="$PS1_VALUE"
-EOF
+    echo "" >> "$TEMP_FILE"
+    echo "# Custom prompt configuration" >> "$TEMP_FILE"
+    echo "PS1='$PS1_VALUE'" >> "$TEMP_FILE"
 fi
 
 # Replace the original .bashrc
