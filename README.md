@@ -4,7 +4,7 @@ A simple bash script with pre-configured PS1 layouts. Supports switching on the 
 ## 🎯 Features
 
 1. **Preview Mode** (`--preview` or `-p`)
-   - Shows all 11 available styles
+   - Shows all 9 available styles
    - Visual examples with realistic paths
    - Marked recommendations for nested directories
 
